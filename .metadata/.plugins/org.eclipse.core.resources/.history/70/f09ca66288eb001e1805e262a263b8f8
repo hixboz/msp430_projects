@@ -1,0 +1,107 @@
+#include <msp430fr6989.h>
+
+
+/**
+ * main.c
+ */
+//void main(void)
+//{
+//	WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
+//	P1DIR |= BIT0;              // BIT0 output
+//	P1DIR &= ~BIT1;             // BIT1 input
+//   // PM5CTL0 &= ~LOCKLPM5;       //We set the LOCKLPM5 bit to 0 in the PM5CTL0 register while leaving other bits unchanged.
+//
+//	P1OUT &= ~BIT0;             // BIT1 0
+//	P1REN |= BIT1;              // Pullup pulldown enable
+//	P1OUT |= BIT1;              // Pull UP
+//
+//	PM5CTL0 &= ~LOCKLPM5;       //We set the LOCKLPM5 bit to 0 in the PM5CTL0 register while leaving other bits unchanged.
+//	while(1){
+//
+//	    if(P1IN & BIT1){
+//	        P1OUT &= ~BIT0;     // Led is not active when the button not pressed
+//	    }
+//	    else{
+//
+//	        P1OUT |= BIT0;
+//	    }
+//	}
+
+
+
+#include <msp430.h>
+
+// Led ve buton pinleri
+#define LED_PIN  BIT0
+#define BUTTON_PIN BIT1
+
+// Buton basma sayacý
+volatile unsigned int button_press_count = 0;
+
+// Buton basýlý tutma durumu
+volatile unsigned char button_pressed = 0;
+
+// Buton basma durumu deðiþkeni
+volatile unsigned char button_state_changed = 0;
+
+void main(void) {
+  WDTCTL = WDTPW + WDTHOLD; // Watchdog devre dýþý
+
+  // P1.0 LED'i çýkýþ olarak ayarla
+  P1DIR |= LED_PIN;
+
+  // P1.1 butonunu giriþ olarak ayarla ve pull-up direnç etkinleþtir
+  P1DIR &= ~BUTTON_PIN;
+  P1REN |= BUTTON_PIN;
+
+  // Buton kesmesini etkinleþtir
+  P1IE |= BUTTON_PIN;
+
+  // Düþen kenar tetiklemesi için kesme ayarýný yap
+  P1IES |= BUTTON_PIN;
+
+  // Kesme vektörünü sýfýrla
+  __bis_SR_register(GIE);
+
+  while(1) {
+    // Buton basýlý tutma kontrolü
+    if (button_pressed) {
+      // Buton basýlý tutulduðunda LED son halini korur
+      if (button_state_changed) {
+        P1OUT ^= LED_PIN;
+        button_state_changed = 0;
+      }
+    } else {
+      // Butona her basýldýðýnda LED toggle edilir
+      if (button_press_count == 1) {
+        P1OUT ^= LED_PIN;
+      }
+      // Buton basma sayacý sýfýrlanýr
+      button_press_count = 0;
+    }
+
+    // Ýþlemciyi uyku moduna sok
+    __bis_SR_register(LPM4_bits);
+  }
+}
+
+// Buton kesme servisi
+#pragma vector=PORT1_VECTOR
+__interrupt void Port1_ISR(void) {
+  // Buton basma sayacý artýrýlýr
+  button_press_count++;
+
+  // Buton basýlý tutma kontrolü
+  if (P1IN & BUTTON_PIN) {
+    button_pressed = 1;
+  } else {
+    button_pressed = 0;
+    button_state_changed = 1;
+  }
+
+  // Kesme bayraðýný temizle
+  P1IFG &= ~BUTTON_PIN;
+}
+
+
+}

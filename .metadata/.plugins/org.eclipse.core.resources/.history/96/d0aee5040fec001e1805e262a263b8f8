@@ -1,0 +1,36 @@
+
+#include <msp430.h>
+#include <stdint.h>
+#include <stdio.h>
+// Configure eUSCI A0 for UART mode, SMCLK as source, 9600 baud rate
+UCA0CTLW0 = UCSWRST;      // Put eUSCI in reset mode
+UCA0CTLW0 |= UCSSEL__SMCLK; // Select SMCLK as source
+UCA0BRW = 6;               // Set baud rate to 9600 (adjust based on clock speed)
+UCA0MCTLW = UCBRS0;         // Modulation setting for 9600 baud
+P1SEL0 |= BIT2 | BIT3;     // Set P1.2 and P1.3 as UART pins
+P1SEL1 &= ~(BIT2 | BIT3);
+UCA0CTLW0 &= ~UCSWRST;     // Take eUSCI out of reset mode
+
+void UART_transmit(char data) {
+    while (!(UCA0IFG & UCTXIFG)); // Wait for transmit buffer to be empty
+    UCA0TXBUF = data;            // Send data
+}
+
+char UART_receive() {
+    while (!(UCA0IFG & UCRXIFG)); // Wait for data to be received
+    return UCA0RXBUF;             // Read received data
+}
+
+int main(void) {
+    WDTCTL = WDTPW | WDTHOLD;   // Stop watchdog timer
+    // Clock configuration (refer to datasheet)
+    // ...
+    UART_init();                // Initialize UART
+
+    while (1) {
+        UART_transmit("Hello, world!\r\n");
+        __delay_cycles(1000000); // Delay for 1 second
+    }
+
+    return 0;
+}

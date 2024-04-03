@@ -1,0 +1,88 @@
+#include <msp430fr6989.h>
+
+
+/**
+ * main.c
+ */
+//void main(void)
+//{
+//	WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
+//	P1DIR |= BIT0;              // BIT0 output
+//	P1DIR &= ~BIT1;             // BIT1 input
+//   // PM5CTL0 &= ~LOCKLPM5;       //We set the LOCKLPM5 bit to 0 in the PM5CTL0 register while leaving other bits unchanged.
+//
+//	P1OUT &= ~BIT0;             // BIT1 0
+//	P1REN |= BIT1;              // Pullup pulldown enable
+//	P1OUT |= BIT1;              // Pull UP
+//
+//	PM5CTL0 &= ~LOCKLPM5;       //We set the LOCKLPM5 bit to 0 in the PM5CTL0 register while leaving other bits unchanged.
+//	while(1){
+//
+//	    if(P1IN & BIT1){
+//	        P1OUT &= ~BIT0;     // Led is not active when the button not pressed
+//	    }
+//	    else{
+//
+//	        P1OUT |= BIT0;
+//	    }
+//	}
+
+
+
+#include <msp430.h>
+
+// LED ve buton pinleri
+#define LED_PIN BIT0
+#define BUTTON_PIN BIT1
+
+int main(void) {
+  // P1.0'ý çýkýþ olarak ayarla
+  P1DIR |= LED_PIN;
+
+  // P1.1'i giriþ olarak ayarla ve pull-up direnci etkinleþtir
+  P1DIR &= ~BUTTON_PIN;
+  P1REN |= BUTTON_PIN;
+
+  // Buton basýlmamýþ halini kaydet
+  unsigned char buttonState = 1;
+
+  // Sonsuz döngü
+  while(1) {
+    // Buton durumunu oku
+    unsigned char buttonPressed = P1IN & BUTTON_PIN;
+
+    // Butona ilk basýldýðýnda (1'den 0'a geçiþ)
+    if (buttonState && !buttonPressed) {
+      // LED'i yak
+      P1OUT |= LED_PIN;
+    }
+
+    // Butona ikinci basýldýðýnda (0'dan 1'e geçiþ)
+    else if (!buttonState && buttonPressed) {
+      // LED'i söndür
+      P1OUT &= ~LED_PIN;
+    }
+
+    // Buton basýlý tutulduðunda
+    else if (!buttonPressed) {
+      // Hiçbir þey yapma
+    }
+
+    // Butondan el çekildiðinde (1'den 0'a geçiþ)
+    else if (buttonState && !buttonPressed) {
+      // LED'i ters çevir (toggle)
+      P1OUT ^= LED_PIN;
+    }
+
+    // Buton durumunu güncelle
+    buttonState = buttonPressed;
+
+    // Bir süre bekle (gecikme)
+    __delay_cycles(10000);
+  }
+
+  return 0;
+}
+
+
+}

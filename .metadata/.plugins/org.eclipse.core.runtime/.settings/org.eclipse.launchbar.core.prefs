@@ -1,0 +1,13 @@
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/arch=x86_64
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/name=Local
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=win32
+activeLaunchTarget=null\:---
+configDescList=org.eclipse.launchbar.core.descriptorType.default\:led_blink,org.eclipse.launchbar.core.descriptorType.default\:Buton_led,org.eclipse.launchbar.core.descriptorType.default\:LCD_example,org.eclipse.launchbar.core.descriptorType.default\:test_lcd,org.eclipse.launchbar.core.descriptorType.default\:ADC_Example,org.eclipse.launchbar.core.descriptorType.default\:MSP430_Serial,org.eclipse.launchbar.core.descriptorType.default\:adc_test_example
+eclipse.preferences.version=1
+org.eclipse.launchbar.core.descriptorType.default\:ADC_Example/activeLaunchMode=run
+org.eclipse.launchbar.core.descriptorType.default\:ADC_Example/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local
+org.eclipse.launchbar.core.descriptorType.default\:Buton_led/activeLaunchMode=run
+org.eclipse.launchbar.core.descriptorType.default\:Buton_led/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local
+org.eclipse.launchbar.core.descriptorType.default\:adc_test_example/activeLaunchMode=debug
+org.eclipse.launchbar.core.descriptorType.default\:led_blink/activeLaunchMode=debug
+org.eclipse.launchbar.core.descriptorType.default\:led_blink/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local
